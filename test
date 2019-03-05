@@ -1,0 +1,29 @@
+graph {
+	"333740" [label="",shape="point"];
+	"d8a2fd" -- "2dc477" [label=0.1];
+	"333740" -- "d8a2fd" ;
+	{rank = same; "333740";"d8a2fd";}
+	"d8a2fd" [shape="point"];
+	"2dc477" [label="A"];
+	"15bbe6" [shape="point"];
+	"d8a2fd" -- "15bbe6" ;
+	{rank = same; "333740";"15bbe6";}
+	"15bbe6" -- "ac10d6" [label=0.2];
+	"ac10d6" [label="B"];
+	"da49ed" [shape="point"];
+	"15bbe6" -- "da49ed" ;
+	{rank = same; "333740";"da49ed";}
+	"da49ed" -- "360377" [label=0.5];
+	"360377" [label="",shape="point"];
+	"8903c6" -- "c07b3f" [label=0.3];
+	"360377" -- "8903c6" ;
+	{rank = same; "360377";"8903c6";}
+	"8903c6" [shape="point"];
+	"c07b3f" [label="C"];
+	"28ba57" [shape="point"];
+	"8903c6" -- "28ba57" ;
+	{rank = same; "360377";"28ba57";}
+	"28ba57" -- "e008f6" [label=0.4];
+	"e008f6" [label="D"];
+}
+
