@@ -4,8 +4,9 @@
 
 The task is to build a tool that converts from the [Newick Format](https://en.wikipedia.org/wiki/Newick_format) to the [DOT format](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) in order to be represented by [Graphviz](https://en.wikipedia.org/wiki/Graphviz). I did it by simply parsing the input (should it be a string or a file), storing each node into a Node class and iteratively printing every node.
 Every node has an internal *id* in order to avoid the case where the newick text has no node names.
+The output, is a DOT string representing a [cladogram](https://en.wikipedia.org/wiki/Cladogram) of the corresponding input Newick text. I chose this representation because it was easier to implement in the DOT format.
 
-Unfortunately, lengths cannot be set properly using the DOT format. You are more than welcome to try to implement it.
+Unfortunately, lengths cannot be represented properly using the DOT format. You are more than welcome to try to implement it.
 
 ## About the Newick Format
 
