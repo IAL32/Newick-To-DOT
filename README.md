@@ -5,6 +5,8 @@
 The task is to build a tool that converts from the [Newick Format](https://en.wikipedia.org/wiki/Newick_format) to the [DOT format](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) in order to be represented by [Graphviz](https://en.wikipedia.org/wiki/Graphviz). I did it by simply parsing the input (should it be a string or a file), storing each node into a Node class and iteratively printing every node.
 Every node has an internal *id* in order to avoid the case where the newick text has no node names.
 
+Unfortunately, lengths cannot be set properly using the DOT format. You are more than welcome to try to implement it.
+
 ## About the Newick Format
 
 As the Wikipedie page states:
@@ -42,7 +44,7 @@ We also have some examples, also from Wikipedia:
 Newick to DOT
 
 Usage:
-    newick-to-dot.py (<str> | --inputFile <inFile>) [--directed] [--empty]
+    newick-to-dot.py (<str> | --inputFile <inFile>)
     newick-to-dot.py (-h | --help)
     newick-to-dot.py --version
 
@@ -50,70 +52,58 @@ Options:
     -h --help                           Show this screen.
     --version                           Show version.
     -i inFile, --inputFile inFile       File to load newick from.
-    -d --directed                       Wether the graph is a directed graph or not [default: False].
-    -e --empty                          Wether to show or not empty labels [default: False].
 ```
 
 ### Examples
-There are quite a few examples given in the repository, so you can play with those.
+There are quite a few examples given in the repository, so you can play with those. All the examples are made using `random.seed(1)` for consistent results.
 
 - Raw text as input
     ```bash
     $ newick-to-dot.py '(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);'
     ```
-    Expected output:
+    Expected output ([Link to viewer](https://dreampuf.github.io/GraphvizOnline/#graph%20%7B%0A%20%20%20%20rankdir%3DLR%3B%0A%20%20%20%20splines%3Dline%3B%0A%20%20%20%20node%20%5Bshape%3Dnone%5D%0A%20%20%20%20%22d8a2fd%22%20%5Bshape%3D%22point%22%5D%3B%0A%20%20%20%20%22333740%22%20%5Bshape%3D%22point%22%5D%3B%0A%20%20%20%20%22d8a2fd%22%20--%20%22333740%22%20%5Bshape%3D%22point%22%5D%3B%0A%20%20%20%20%222dc477%22%20%5Blabel%3D%22A%22%5D%3B%0A%20%20%20%20%22333740%22%20--%20%222dc477%22%20%3B%0A%20%20%20%20%22ac10d6%22%20%5Blabel%3D%22B%22%5D%3B%0A%20%20%20%20%22333740%22%20--%20%22ac10d6%22%20%3B%0A%20%20%20%20%22360377%22%20%5Bshape%3D%22point%22%5D%3B%0A%20%20%20%20%22333740%22%20--%20%22360377%22%20%3B%0A%20%20%20%20%22c07b3f%22%20%5Blabel%3D%22C%22%5D%3B%0A%20%20%20%20%22360377%22%20--%20%22c07b3f%22%20%3B%0A%20%20%20%20%22e008f6%22%20%5Blabel%3D%22D%22%5D%3B%0A%20%20%20%20%22360377%22%20--%20%22e008f6%22%20%3B%0A%7D)):
     ```
     graph {
-            "c031eb" [label="c031eb"];
-            "c031eb" -- "342d6f" ;
-            "342d6f" [label="A"];
-            "c031eb" -- "dfb943" ;
-            "dfb943" [label="B"];
-            "c031eb" -- "2b0028" ;
-            "2b0028" [label="2b0028"];
-            "2b0028" -- "e30a56" [label=0.5,weight=1];
-            "e30a56" [label="C"];
-            "2b0028" -- "92809c" [label=0.5,weight=1];
-            "92809c" [label="D"];
+        rankdir=LR;
+        splines=line;
+        node [shape=none]
+        "d8a2fd" [shape="point"];
+        "333740" [shape="point"];
+        "d8a2fd" -- "333740" [shape="point"];
+        "2dc477" [label="A"];
+        "333740" -- "2dc477" ;
+        "ac10d6" [label="B"];
+        "333740" -- "ac10d6" ;
+        "360377" [shape="point"];
+        "333740" -- "360377" ;
+        "c07b3f" [label="C"];
+        "360377" -- "c07b3f" ;
+        "e008f6" [label="D"];
+        "360377" -- "e008f6" ;
     }
     ```
 - File text as input
     ```bash
     $ newick-to-dot.py --inputFile newick-file-1
     ```
-    Expected output:
+    Expected output: ([Link to viewer](https://dreampuf.github.io/GraphvizOnline/#graph%20%7B%0A%09rankdir%3DLR%3B%0A%09splines%3Dline%3B%0A%09node%20%5Bshape%3Dnone%5D%0A%09%22d8a2fd%22%20%5Bshape%3D%22point%22%5D%3B%0A%09%22333740%22%20%5Bshape%3D%22point%22%5D%3B%0A%09%22d8a2fd%22%20--%20%22333740%22%20%5Bshape%3D%22point%22%5D%3B%0A%09%222dc477%22%20%5Blabel%3D%222dc477%22%5D%3B%0A%09%22333740%22%20--%20%222dc477%22%20%3B%0A%09%22ac10d6%22%20%5Blabel%3D%22ac10d6%22%5D%3B%0A%09%22333740%22%20--%20%22ac10d6%22%20%3B%0A%09%22360377%22%20%5Bshape%3D%22point%22%5D%3B%0A%09%22333740%22%20--%20%22360377%22%20%3B%0A%09%22c07b3f%22%20%5Blabel%3D%22c07b3f%22%5D%3B%0A%09%22360377%22%20--%20%22c07b3f%22%20%3B%0A%09%22e008f6%22%20%5Blabel%3D%22e008f6%22%5D%3B%0A%09%22360377%22%20--%20%22e008f6%22%20%3B%0A%7D))
     ```
     graph {
-            "bd0f65" [label="bd0f65"];
-            "bd0f65" -- "790e7e" ;
-            "790e7e" [label="790e7e"];
-            "bd0f65" -- "de427d" ;
-            "de427d" [label="de427d"];
-            "bd0f65" -- "e1342d" ;
-            "e1342d" [label="e1342d"];
-            "e1342d" -- "150e01" ;
-            "150e01" [label="150e01"];
-            "e1342d" -- "756e43" ;
-            "756e43" [label="756e43"];
-    }
-    ```
-- Directed graph option
-    ```bash
-    $ newick-to-dot.py -i '(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);'
-    ```
-    Expected output:
-    ```
-    digraph {
-            "6789e8" [label="6789e8"];
-            "6789e8" --> "b62ae7" ;
-            "b62ae7" [label="A"];
-            "6789e8" --> "1d1856" ;
-            "1d1856" [label="B"];
-            "6789e8" --> "36a405" ;
-            "36a405" [label="36a405"];
-            "36a405" --> "11e845" [label=0.5,weight=1];
-            "11e845" [label="C"];
-            "36a405" --> "608c82" [label=0.5,weight=1];
-            "608c82" [label="D"];
+        rankdir=LR;
+        splines=line;
+        node [shape=none]
+        "d8a2fd" [shape="point"];
+        "333740" [shape="point"];
+        "d8a2fd" -- "333740" [shape="point"];
+        "2dc477" [label="2dc477"];
+        "333740" -- "2dc477" ;
+        "ac10d6" [label="ac10d6"];
+        "333740" -- "ac10d6" ;
+        "360377" [shape="point"];
+        "333740" -- "360377" ;
+        "c07b3f" [label="c07b3f"];
+        "360377" -- "c07b3f" ;
+        "e008f6" [label="e008f6"];
+        "360377" -- "e008f6" ;
     }
     ```

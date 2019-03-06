@@ -5,16 +5,15 @@
 """Newick to DOT
 
 Usage:
-    newick-to-dot.py (<str> | --inputFile <inFile>) [--directed] [--empty]
+    newick-to-dot.py (<str> | --inputFile <inFile>) [--empty]
     newick-to-dot.py (-h | --help)
     newick-to-dot.py --version
 
 Options:
-    -h --help                           Show this screen.
-    --version                           Show version.
-    -i inFile, --inputFile inFile       File to load newick from.
-    -d --directed                       Wether the graph is a directed graph or not [default: False].
-    -e --empty                          Wether to show or not empty labels [default: False].
+    -h --help                       Show this screen.
+    --version                       Show version.
+    -i inFile, --inputFile inFile   File to load newick from.
+    -e --empty                      If not specified, leaf nodes with no name will be shown with their node internal id
 """
 
 import sys
@@ -35,7 +34,6 @@ class Node(object):
         self.ancestor = None
         self.dot = self._to_dot
         self.leaf_count = self._leaf_count
-        self.is_leaf = self._is_leaf()
         self.arch_props = {"label": self.length} if self.length else {}
         self.label = self._to_dot_label
 
@@ -63,13 +61,14 @@ class Node(object):
 
     def _leaf_count(self):
         sum = 0
-        if self._is_leaf:
+        if self.is_leaf:
             self.leaf_count = sum
         for n in self.descendants:
             sum += n.leaf_count()
         return sum
 
-    def _is_leaf(self):
+    @property
+    def is_leaf(self):
         return not bool(self.descendants)
     
     def _to_dot_label(self, d={}):
@@ -92,78 +91,52 @@ class Node(object):
     def _gen_random_node_id(self):
         return ''.join(random.choices(string.digits + 'abcdef', k=6))
 
-    def _graph_node(self, nodeFromId, nodeToId=None, directed=False, props={}):
+    def _graph_node(self, nodeFromId, nodeToId=None, props={}):
         if nodeToId:
-            return '\n\t"%s" --%s "%s" %s;' % (nodeFromId, ('>') if directed else '',  nodeToId, self._to_dot_label(props))
+            return '\n\t"%s" -- "%s" %s;' % (nodeFromId, nodeToId, self._to_dot_label(props))
         else: # printing out single node
             return '\n\t"%s" %s;' % (nodeFromId, self._to_dot_label(props))
-    
-    def _graph_same_rank(self, *kw):
-        out = '\n\t{rank = same; '
-        for id in kw:
-            out += '"%s";' % id
-        out += '}'
-        return out
 
-    def _phantom_node(self, fromNode=None, toNode=None, phantom=None, directed=False, before=True):
-        phantom_node_id = self._gen_random_node_id()
-        # first, lets print our phantom node
-        if before:
-            out = self._graph_node(phantom_node_id, nodeToId=toNode.id, props=toNode.arch_props)
-        else:
-            out = self._graph_node(phantom_node_id, props={"shape": "point"})
-
-        # if we already have a previous phantom node, we attach to it!
-        if not phantom is None:
-            out += self._graph_node(nodeFromId=phantom, nodeToId=phantom_node_id, directed=directed)
-        else:
-            # then we arch from our initial node to the phantom node
-            out += self._graph_node(fromNode.id, nodeToId=phantom_node_id, directed=directed)
-        
-        # then we state that they are at the same rank
-        out += self._graph_same_rank(fromNode.id, phantom_node_id)
-        
-        if before:
-            out += self._graph_node(phantom_node_id, props={"shape": "point"})
-        else:
-            out += self._graph_node(phantom_node_id, nodeToId=toNode.id, props=toNode.arch_props)
-
-        return out, phantom_node_id
-
-    def _to_dot(self, directed=False, emptyLabels=False):
+    def _to_dot(self, emptyLabels=False):
         out = ''
-        if not self.ancestor: # first
-            out += ('digraph') if directed else 'graph'
-            out += ' {'
+        if not self.ancestor: # first graph node
+            out += 'graph {\n\trankdir=LR;\n\tsplines=line;\n\tnode [shape=none]'
+            phantom_node_id = self._gen_random_node_id()
+            # create a phantom node to attach my first node to
+            out += self._graph_node(phantom_node_id, props={"shape": "point"})
+            
+        if not self.is_leaf and not self.ancestor: # father of many, need the label if present
+            props = {"shape": "point"}
+            if self.name: # we give the headlabel to the arch
+                props["headlabel"] = self.name
+            out += self._graph_node(self.id, props={"shape": "point"})
+            out += self._graph_node(phantom_node_id, self.id, props=props)
 
-        # set empty label if asked to
-        if emptyLabels:
-            if not self.name:
-                out += self._graph_node(self.id, props={"label": "", "shape": "point"})
-            else:
-                out += self._graph_node(self.id, props={"label": self.name})
-        else:
-            if not self.name:
-                out += self._graph_node(self.id, props={"label": self.id})
-            else:
-                out += self._graph_node(self.id, props={"label": self.name})
-
-        phantom_node_id = None
-        for i, n in enumerate(self.descendants):
-            before = i < ((len(self.descendants) - 1) / 2)
-            if phantom_node_id is None:
-                out_tmp, phantom_node_id = self._phantom_node(fromNode=self, toNode=n, directed=directed, before=before)
-            else:
-                out_tmp, phantom_node_id = self._phantom_node(fromNode=self, toNode=n,  phantom=phantom_node_id, directed=directed, before=before)
-            out += out_tmp
-            out += n.dot(directed=directed, emptyLabels=emptyLabels)
+        for n in self.descendants:
+            if n.is_leaf:
+                if n.name:
+                    props = {"label": n.name}
+                else:
+                    if not emptyLabels:
+                        props = {"label": n.id}
+                    else:
+                        props = {"label": ""}
+                out += self._graph_node(n.id, props=props or {})
+                out += self._graph_node(self.id, n.id)
+            else: # it has descendants
+                out += self._graph_node(n.id, props={"shape": "point"})
+                props = {}
+                if n.name: # we give the headlabel to the arch
+                    props["headlabel"] = n.name
+                out += self._graph_node(self.id, n.id, props=props)
+            out += n.dot(emptyLabels=emptyLabels)
 
         if not self.ancestor: # first
             out += '\n}\n'
         return out
 
     def __repr__(self):
-        return '[id=%s;name=%s;length=%s;descendants=%s]' % (self.id, (self.name or ""), (self._length or ""), str(len(self.descendants) or "" ))
+        return '[id=%s;name=%s;length=%s;descendants=%s]' % (self.id, (self.name or ""), (self._length or ""), str(len(self.descendants) or ""))
 
 def loads(s):
     # Theoretically, you will never parse more than two root nodes.
@@ -225,7 +198,7 @@ def main(argv):
             inputtext = f.read()
 
         tree = loads(inputtext)
-        output = tree[0].dot(directed=arguments['--directed'] or False, emptyLabels=arguments['--empty'] or False)
+        output = tree[0].dot(emptyLabels=arguments['--empty'])
         print(output)
 
 if __name__ == "__main__":
