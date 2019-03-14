@@ -62,7 +62,7 @@ There are quite a few examples given in the repository, so you can play with tho
     ```bash
     $ newick-to-dot.py '(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);'
     ```
-    Expected output ([Link to viewer](https://dreampuf.github.io/GraphvizOnline/#graph%20%7B%0A%20%20%20%20rankdir%3DLR%3B%0A%20%20%20%20splines%3Dline%3B%0A%20%20%20%20node%20%5Bshape%3Dnone%5D%0A%20%20%20%20%22d8a2fd%22%20%5Bshape%3D%22point%22%5D%3B%0A%20%20%20%20%22333740%22%20%5Bshape%3D%22point%22%5D%3B%0A%20%20%20%20%22d8a2fd%22%20--%20%22333740%22%20%5Bshape%3D%22point%22%5D%3B%0A%20%20%20%20%222dc477%22%20%5Blabel%3D%22A%22%5D%3B%0A%20%20%20%20%22333740%22%20--%20%222dc477%22%20%3B%0A%20%20%20%20%22ac10d6%22%20%5Blabel%3D%22B%22%5D%3B%0A%20%20%20%20%22333740%22%20--%20%22ac10d6%22%20%3B%0A%20%20%20%20%22360377%22%20%5Bshape%3D%22point%22%5D%3B%0A%20%20%20%20%22333740%22%20--%20%22360377%22%20%3B%0A%20%20%20%20%22c07b3f%22%20%5Blabel%3D%22C%22%5D%3B%0A%20%20%20%20%22360377%22%20--%20%22c07b3f%22%20%3B%0A%20%20%20%20%22e008f6%22%20%5Blabel%3D%22D%22%5D%3B%0A%20%20%20%20%22360377%22%20--%20%22e008f6%22%20%3B%0A%7D)):
+    Expected output ([Link to viewer](https://bit.ly/2HBCnLP)):
     ```
     graph {
         rankdir=LR;
@@ -87,7 +87,7 @@ There are quite a few examples given in the repository, so you can play with tho
     ```bash
     $ newick-to-dot.py --inputFile newick-file-1
     ```
-    Expected output: ([Link to viewer](https://dreampuf.github.io/GraphvizOnline/#graph%20%7B%0A%09rankdir%3DLR%3B%0A%09splines%3Dline%3B%0A%09node%20%5Bshape%3Dnone%5D%0A%09%22d8a2fd%22%20%5Bshape%3D%22point%22%5D%3B%0A%09%22333740%22%20%5Bshape%3D%22point%22%5D%3B%0A%09%22d8a2fd%22%20--%20%22333740%22%20%5Bshape%3D%22point%22%5D%3B%0A%09%222dc477%22%20%5Blabel%3D%222dc477%22%5D%3B%0A%09%22333740%22%20--%20%222dc477%22%20%3B%0A%09%22ac10d6%22%20%5Blabel%3D%22ac10d6%22%5D%3B%0A%09%22333740%22%20--%20%22ac10d6%22%20%3B%0A%09%22360377%22%20%5Bshape%3D%22point%22%5D%3B%0A%09%22333740%22%20--%20%22360377%22%20%3B%0A%09%22c07b3f%22%20%5Blabel%3D%22c07b3f%22%5D%3B%0A%09%22360377%22%20--%20%22c07b3f%22%20%3B%0A%09%22e008f6%22%20%5Blabel%3D%22e008f6%22%5D%3B%0A%09%22360377%22%20--%20%22e008f6%22%20%3B%0A%7D))
+    Expected output: ([Link to viewer](https://bit.ly/2JcD0hh))
     ```
     graph {
         rankdir=LR;
